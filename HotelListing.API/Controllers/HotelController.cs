@@ -1,5 +1,6 @@
 ﻿using HotelListing.API.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 
@@ -12,32 +13,32 @@ namespace HotelListing.API.Controllers
     public class HotelController : ControllerBase
     {
         
-        private List<Hotel> Hotels = new List<Hotel> { new Hotel
+        private ApplicationDbContext _context;
+        public HotelController(ApplicationDbContext context)
         {
-            Id = 1,
-            Name = "Hotel1",
-            Address = "Address1",
-            Rating = 3.1
-        }, new Hotel
-        {
-            Id =2,
-            Name = "Hotel2",
-            Address = "Address2",
-            Rating = 4.2
-        }};
+            _context = context;
+        }
         //  Sumamary
         // GET: api/<HotelController>
         [HttpGet]
         public ActionResult<IEnumerable<Hotel>> Get()
         {
-            return Ok(Hotels);
+            var model = _context.Hotels.Select(c => new Hotel
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Address = c.Address,
+                Rating = c.Rating,
+                CountryId = c.CountryId
+            }).ToList();
+            return Ok(model);
         }
         // Index
         // GET api/<HotelController>/5
         [HttpGet("{id}")]
-        public ActionResult<Hotel> Get(int id)
+        public async Task<ActionResult<Hotel>> Get(int id)
         {
-            var program = Hotels.FirstOrDefault(c => c.Id == id);
+            var program = await _context.Hotels.FindAsync(id);
 
             if (program == null)
             {
@@ -50,22 +51,24 @@ namespace HotelListing.API.Controllers
         // Create
         // POST api/<HotelController>
         [HttpPost]
-        public ActionResult<Hotel> Post([FromBody] Hotel hotel)
+        public async Task<ActionResult<Hotel>> Post([FromBody] Hotel hotel)
         {
-            if (Hotels.Any(c => c.Id == hotel.Id))
+            var product = await _context.Hotels.AnyAsync(c => c.Id == hotel.Id);
+            if (product == true)
             {
                 Console.WriteLine("Duplicate Hotel");
                 return BadRequest("Hotel Alredy Exit");
             }
-            Hotels.Add(hotel);
+            _context.Add(hotel);
+            await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(Get), new { id = hotel.Id }, hotel);
         }
 
         // PUT api/<HotelController>/5
         [HttpPut("{id}")]
-        public  ActionResult<Hotel> Put(int id, [FromBody] Hotel hotel)
+        public  async Task<ActionResult<Hotel>> Put(int id, [FromBody] Hotel hotel)
         {
-            var product =  Hotels.FirstOrDefault(c => c.Id == id);
+            var product = await _context.Hotels.FindAsync(id);
             if (product == null)
             {
                 Console.WriteLine("No Hotel");
@@ -75,21 +78,22 @@ namespace HotelListing.API.Controllers
             product.Name = hotel.Name;
             product.Address = hotel.Address;
             product.Rating = hotel.Rating;
-
+            await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(Get),new {id = hotel.Id}, hotel);
         }
 
         // DELETE api/<HotelController>/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var product = Hotels.FirstOrDefault(c => c.Id==id);
+            var product = await _context.Hotels.FindAsync(id);
             if (product == null)
             {
                 return BadRequest("Not Found Hotel");
             }
 
-            Hotels.Remove(product);
+            _context.Remove(product);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
     }

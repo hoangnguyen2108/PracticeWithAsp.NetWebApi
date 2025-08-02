@@ -1,11 +1,12 @@
-﻿namespace HotelListing.API.Data
+﻿namespace HotelListing.API.Model.Country
 {
-    public class Country
+    public class GetCountry
     {
         public int Id { get; set; }
         public string? Name { get; set; }
         public string? ShortName { get; set; }
-        public List<Hotel>? HotelList { get; set; } = new ();
     }
-}
 
+   
+
+}

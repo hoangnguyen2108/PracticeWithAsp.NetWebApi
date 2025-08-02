@@ -7,7 +7,7 @@
 namespace HotelListing.API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialData : Migration
+    public partial class initialdata : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

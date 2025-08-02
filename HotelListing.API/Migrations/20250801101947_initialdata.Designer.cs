@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelListing.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250801025726_InitialData")]
-    partial class InitialData
+    [Migration("20250801101947_initialdata")]
+    partial class initialdata
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

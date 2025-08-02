@@ -1,4 +1,6 @@
+using HotelListing.API.Configurations;
 using HotelListing.API.Data;
+using HotelListing.API.Service;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +15,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAutoMapper(typeof(MapperConfig));
+builder.Services.AddScoped<ICountriesService, CountriesService>();
 
 var app = builder.Build();
 

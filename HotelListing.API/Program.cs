@@ -1,6 +1,8 @@
 using HotelListing.API.Configurations;
 using HotelListing.API.Data;
 using HotelListing.API.Service;
+using HotelListing.API.User;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +21,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 builder.Services.AddScoped<ICountriesService, CountriesService>();
 
+builder.Services.AddIdentityCore<ApiUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddScoped<IAuthManager, AuthManager>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
